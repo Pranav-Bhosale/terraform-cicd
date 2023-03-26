@@ -1,0 +1,92 @@
+
+name: terraform-ci/cd
+
+on:
+  push:
+    branch: "main"
+  pull_request:
+    branch: "main"
+
+jobs:
+#  test:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#      - name: Setup java
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: corretto
+#          java-version: 17
+#      - name: Test
+#        run: ./gradlew test
+#
+#  build:
+#    needs: [test]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#      - name: Setup java
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: corretto
+#          java-version: 17
+#      - name: Build
+#        run: ./gradlew build
+#      - name: Copy jar file to artifacts
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: esop-trading-1.0
+#          path: build/libs/esop-0.1-all.jar
+
+  create-infrastructure:
+#    needs: [build]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: create backend
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cd ./create-s3-bucket
+          terraform init 
+          echo yes | terraform apply
+      - name: create-instance
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cd ./create-instance
+          terraform init
+          echo yes | terraform apply | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" > ip_address
+      - name: Copy jar file to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ip_address
+          path: create-instance/ip_address
+#  deploy:
+#    needs: [build]
+#    runs-on: ubuntu-22.04
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#      - name: Download Artifact
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: esopApp
+#      - name: Transfer artifact to EC2 instance
+#        env:
+#          SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+#          SSH_HOST: ${{ secrets.SSH_HOST }}
+#        run: |
+#          eval `ssh-agent`
+#          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+#          scp -o StrictHostKeyChecking=no "deploy.sh" ec2-user@$SSH_HOST:~
+#          scp -o StrictHostKeyChecking=no "esop-0.1-all.jar" ec2-user@$SSH_HOST:~
+#          ssh -o StrictHostKeyChecking=no ec2-user@$SSH_HOST -t "sudo yum install java-17-amazon-corretto-headless -y"
+#          ssh -o StrictHostKeyChecking=no ec2-user@$SSH_HOST -t "sudo ./deploy.sh"
