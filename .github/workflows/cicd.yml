@@ -64,12 +64,12 @@ jobs:
         run: |
           cd ./create-instance
           terraform init
-          terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" > ip_address
-      - name: Copy jar file to artifacts
+          terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" > ip_address.txt
+      - name: Copy ip address
         uses: actions/upload-artifact@v3
         with:
-          name: ip_address
-          path: create-instance/ip_address
+          name: ip_address.txt
+          path: create-instance/ip_address.txt
 #  deploy:
 #    needs: [build]
 #    runs-on: ubuntu-22.04
