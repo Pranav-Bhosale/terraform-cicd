@@ -64,7 +64,7 @@ jobs:
         run: |
           cd ./create-instance
           terraform init
-          terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" |  cut -f1 -d \n  | tr -d \n
+          terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" |  cut -f1 -d "\r\n"  | tr -d "\r\n"
       - name: Copy ip address
         uses: actions/upload-artifact@v3
         with:
