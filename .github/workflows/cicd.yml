@@ -73,7 +73,7 @@ jobs:
         run: |
           cd ./create-instance
           terraform init
-          echo ip=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" |  cut -f1 -d ":"  | tr -d '\n') >> $GITHUB_OUTPUT
+          echo ip=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" |  cut -f1 -d ":"  | tr -d '\n') >> "$GITHUB_OUTPUT"
 
   deploy:
     needs: [create-infrastructure]
@@ -90,9 +90,9 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST:  ${{needs.create-infrastructure.outputs.public_ip}}
         run: |
-          eval `ssh-agent`
+           eval `ssh-agent`
            echo "$SSH_HOST"
-          ssh-add - <<< "${SSH_PRIVATE_KEY}"
+           ssh-add - <<< "${SSH_PRIVATE_KEY}"
 #          scp -o StrictHostKeyChecking=no "deploy.sh" ec2-user@$SSH_HOST:~
 #          scp -o StrictHostKeyChecking=no "esop-0.1-all.jar" ec2-user@$SSH_HOST:~
 #          ssh -o StrictHostKeyChecking=no ec2-user@$SSH_HOST -t "sudo yum install java-17-amazon-corretto-headless -y"
