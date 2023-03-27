@@ -91,7 +91,7 @@ jobs:
           SSH_HOST:  ${{needs.create-infrastructure.outputs.public_ip}}
         run: |
            eval `ssh-agent`
-           echo "$SSH_HOST"
+           echo ${{needs.create-infrastructure.outputs}}
            ssh-add - <<< "${SSH_PRIVATE_KEY}"
 #          scp -o StrictHostKeyChecking=no "deploy.sh" ec2-user@$SSH_HOST:~
 #          scp -o StrictHostKeyChecking=no "esop-0.1-all.jar" ec2-user@$SSH_HOST:~
