@@ -85,7 +85,7 @@ jobs:
           name: esop-trading-1.0
       - name: Transfer artifact to EC2 instance
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST:  ${{needs.create-infrastructure.outputs.public_ip.ip}}
         run: |
           eval `ssh-agent`
