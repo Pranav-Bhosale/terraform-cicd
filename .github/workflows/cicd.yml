@@ -20,7 +20,9 @@ jobs:
           distribution: corretto
           java-version: 17
       - name: Test
-        run: ./gradlew test
+        run: |
+          cd esop
+          ./gradlew test
 
   build:
     needs: [test]
@@ -34,12 +36,14 @@ jobs:
           distribution: corretto
           java-version: 17
       - name: Build
-        run: ./gradlew build
+        run: |
+          cd esop
+          ./gradlew build
       - name: Copy jar file to artifacts
         uses: actions/upload-artifact@v3
         with:
           name: esop-trading-1.0
-          path: build/libs/esop-0.1-all.jar
+          path: esop/build/libs/esop-0.1-all.jar
 
   create-infrastructure:
     needs: [build]
