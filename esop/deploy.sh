@@ -1,6 +1,6 @@
-value=$(sudo lsof -n -i :80 | grep LISTEN | awk -F ' ' '{print $2}') && sudo kill -9 $value > /dev/null
+value=$(sudo lsof -n -i :80 )
 
-if [-d $value]
+if [-z "$value"]
 then
   sudo MICRONAUT_SERVER_PORT=80 nohup java -jar esop-0.1-all.jar  > /dev/null &
   exit
