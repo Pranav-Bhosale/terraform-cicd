@@ -88,7 +88,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           SSH_HOST:  ${{needs.create-infrastructure.outputs.public_ip.ip}}
         run: |
-          echo "${SSH_PRIVATE_KEY}"
+          echo $SSH_PRIVATE_KEY
 #          eval `ssh-agent`
 #          ssh-add - <<< "${SSH_PRIVATE_KEY}"
 
