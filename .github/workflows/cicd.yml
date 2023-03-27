@@ -86,10 +86,10 @@ jobs:
       - name: Transfer artifact to EC2 instance
         env:
           SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          SSH_HOST:  ${{needs.create-infrastructure.outputs.public_ip}}
+          SSH_HOST:  ${{needs.create-infrastructure.outputs.public_ip.ip}}
         run: |
           eval `ssh-agent`
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+          echo "$SSH_PRIVATE_KEY" | ssh-add - > /dev/null
           scp -o StrictHostKeyChecking=no "deploy.sh" ec2-user@$SSH_HOST:~
           scp -o StrictHostKeyChecking=no "esop-0.1-all.jar" ec2-user@$SSH_HOST:~
           ssh -o StrictHostKeyChecking=no ec2-user@$SSH_HOST -t "sudo yum install java-17-amazon-corretto-headless -y"
