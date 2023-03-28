@@ -41,6 +41,6 @@ jobs:
     needs: [ get-ip ]
     uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.yml@main
     with:
-      public_ip: ${{needs.create-infrastructure.outputs.public_ip}}
+      public_ip: ${{needs.get-ip.outputs.public_ip}}
     secrets:
       SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
