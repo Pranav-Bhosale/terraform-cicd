@@ -90,7 +90,7 @@ jobs:
           SSH_HOST:  ${{needs.create-infrastructure.outputs.public_ip}}
         run: |
            echo "start"
-           echo ${{needs.create-infrastructure.outputs.public_ip}}
+           echo "${{needs.create-infrastructure.outputs.public_ip}}"
            echo "end"
            eval `ssh-agent`
            ssh-add - <<< "${SSH_PRIVATE_KEY}"
