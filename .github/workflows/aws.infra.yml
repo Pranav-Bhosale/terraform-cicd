@@ -65,4 +65,5 @@ jobs:
     uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.cicd.yml@main
     with:
       public_ip: ${{needs.create-infrastructure.outputs.public_ip}}
-    secrets: ${{secrets.SSH_PRIVATE_KEY}}
+    secrets:
+      SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
