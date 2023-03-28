@@ -60,6 +60,7 @@ jobs:
           cd ./create-instance
           echo ip=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " |  cut -f1 -d ":"  | tr -d '\n') >> "$GITHUB_OUTPUT"
 
+
   esop:
     needs: [create-infrastructure]
     uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.cicd.yml@main
