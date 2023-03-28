@@ -64,8 +64,8 @@ jobs:
           name: esop-trading-1.0
       - name: Transfer artifact to EC2 instance
         env:
-          SSH_PRIVATE_KEY: ${{ inputs.SSH_PRIVATE_KEY }}
-          HOST_IP: ${{ secrets.public_ip }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST_IP: ${{ inputs.public_ip }}
         run: |
           echo "$HOST_IP"
           SSH_HOST=$(echo "$HOST_IP" | tr -d \")
