@@ -12,7 +12,7 @@ jobs:
   get-ip:
     runs-on: ubuntu-22.04
     steps:
-      - name: Download jar
+      - name: get ip address
         uses: actions/download-artifact@v3
         with:
           name: ip
