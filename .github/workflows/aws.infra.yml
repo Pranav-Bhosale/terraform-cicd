@@ -9,7 +9,6 @@ on:
 
 jobs:
   create-infrastructure:
-    needs: [build]
     runs-on: ubuntu-22.04
     outputs:
       public_ip: ${{steps.create-instance.outputs.ip}}
