@@ -58,8 +58,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           cd ./create-instance
-          echo ip=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " |  cut -f1 -d ":"  | tr -d '\n') >> "$GITHUB_OUTPUT"
-          echo "$GITHUB_OUTPUT"
+          echo ip=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" |  cut -f1 -d ":"  | tr -d '\n') >> "$GITHUB_OUTPUT"
+
   call-workflow-passing-data:
     needs: [create-infrastructure]
     uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.cicd.yml@main

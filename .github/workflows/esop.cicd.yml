@@ -65,7 +65,6 @@ jobs:
           SSH_HOST: ${{ inputs.public_ip }}
         run: |
           echo "start"
-          echo "${{needs.create-infrastructure.outputs.public_ip}}"
           echo "end"
           echo "$SSH_HOST"
           eval `ssh-agent`
