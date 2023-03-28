@@ -11,8 +11,29 @@ on:
 jobs:
   get-ip:
     runs-on: ubuntu-22.04
+    outputs:
+      public_ip: ${{steps.get-ip.outputs.ip}}
     steps:
-      - name: get ip address
-        uses: actions/download-artifact@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
         with:
-          name: ip
+          terraform_wrapper: false
+      - name: terraform output
+        id: get-ip
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cd ./create-instance
+          IP_ADDRESS=$(terraform output | grep instance_public_ip | tr -d "instance_public_ip = " |  cut -f1 -d ":"  | tr -d '\n')
+          echo ip="$IP_ADDRESS" >> "$GITHUB_OUTPUT"
+
+  esop:
+    needs: [ get-ip ]
+    uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.yml@main
+    with:
+      public_ip: ${{needs.create-infrastructure.outputs.public_ip}}
+    secrets:
+      SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
