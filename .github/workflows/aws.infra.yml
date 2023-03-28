@@ -8,8 +8,7 @@ on:
       - '**.infra.yml'
 
 jobs:
-
-  terraform-setup-s3-backend:
+  init-backend:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
@@ -25,19 +24,27 @@ jobs:
         run: |
           cd ./create-s3-bucket
           terraform init
-      - name: create backend
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          cd ./create-s3-bucket
-          terraform apply -auto-approve
+  create-backend:
+      needs: [ init-backend ]
+      runs-on: ubuntu-22.04
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2
+          with:
+            terraform_wrapper: false
+        - name: create backend
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          run: |
+            cd ./create-s3-bucket
+            terraform apply -auto-approve
 
-  create-infrastructure:
-    needs: [terraform-setup-s3-backend]
+  init-infrastructure:
+    needs: [ create-backend ]
     runs-on: ubuntu-22.04
-    outputs:
-      public_ip: ${{steps.create-instance.outputs.ip}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -45,18 +52,82 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
-      - name: terraform init
+      - name: init infrastructure
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           cd ./create-instance
           terraform init
-      - name: terraform apply
-        id: create-instance
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          cd ./create-instance
-          echo ip=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" |  cut -f1 -d ":"  | tr -d '\n') >> "$GITHUB_OUTPUT"
+  create-infrastructure:
+      needs: [init-infrastructure ]
+      runs-on: ubuntu-22.04
+      outputs:
+        public_ip: ${{steps.create-instance.outputs.ip}}
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2
+          with:
+            terraform_wrapper: false
+        - name: terraform apply
+          id: create-instance
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          run: |
+            cd ./create-instance
+            echo ip=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" |  cut -f1 -d ":"  | tr -d '\n') >> "$GITHUB_OUTPUT"
+
+#  terraform-setup-s3-backend:
+#    runs-on: ubuntu-22.04
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#      - name: Setup Terraform
+#        uses: hashicorp/setup-terraform@v2
+#        with:
+#          terraform_wrapper: false
+#      - name: init backend
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        run: |
+#          cd ./create-s3-bucket
+#          terraform init
+#      - name: create backend
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        run: |
+#          cd ./create-s3-bucket
+#          terraform apply -auto-approve
+#
+#  create-infrastructure:
+#    needs: [terraform-setup-s3-backend]
+#    runs-on: ubuntu-22.04
+#    outputs:
+#      public_ip: ${{steps.create-instance.outputs.ip}}
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#      - name: Setup Terraform
+#        uses: hashicorp/setup-terraform@v2
+#        with:
+#          terraform_wrapper: false
+#      - name: terraform init
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        run: |
+#          cd ./create-instance
+#          terraform init
+#      - name: terraform apply
+#        id: create-instance
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        run: |
+#          cd ./create-instance
+#          echo ip=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" |  cut -f1 -d ":"  | tr -d '\n') >> "$GITHUB_OUTPUT"
