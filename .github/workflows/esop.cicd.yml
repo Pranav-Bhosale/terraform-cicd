@@ -4,8 +4,9 @@ name: CI/CD
 on:
   push:
     branch: "main"
-    paths-ignore:
-      - '**.tf'
+    paths:
+      - 'espo/**'
+      - '**.cicd.yml'
 
 
 jobs:

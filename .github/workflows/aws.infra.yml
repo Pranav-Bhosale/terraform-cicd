@@ -5,6 +5,7 @@ on:
     branch: "main"
     paths:
       - '**.tf'
+      - '**.infra.yml'
 
 jobs:
   create-infrastructure:
