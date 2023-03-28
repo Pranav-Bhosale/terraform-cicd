@@ -32,11 +32,9 @@ jobs:
           cd ./create-s3-bucket
           terraform apply -auto-approve
 
-  create-infrastructure:
+  infrastructure-plan:
     needs: [terraform-setup-s3-backend]
     runs-on: ubuntu-22.04
-    outputs:
-      public_ip: ${{steps.create-instance.outputs.ip}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -58,10 +56,23 @@ jobs:
         run: |
           cd ./create-instance
           terraform plan
+
+  create-infrastructure:
+    needs: [infrastructure-plan]
+    runs-on: ubuntu-22.04
+    environment:
+      name: esop-prod
+    outputs:
+      public_ip: ${{steps.create-instance.outputs.ip}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
       - name: terraform apply
         id: create-instance
-        environment:
-          name: esop-prod
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -69,6 +80,8 @@ jobs:
           cd ./create-instance
           IP_ADDRESS=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " |  cut -f1 -d ":"  | tr -d '\n')
           echo ip="$IP_ADDRESS" >> "$GITHUB_OUTPUT"
+          
+
   esop:
     needs: [create-infrastructure]
     uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.yml@main
