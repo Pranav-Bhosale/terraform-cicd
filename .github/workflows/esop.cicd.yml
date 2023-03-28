@@ -11,7 +11,7 @@ on:
       public_ip:
         required: true
         type: string
-      secrets:
+    secrets:
         SSH_PRIVATE_KEY:
           required: true
 
