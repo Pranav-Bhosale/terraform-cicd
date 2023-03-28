@@ -5,7 +5,7 @@ on:
   push:
     branch: "main"
     paths-ignore:
-      - '**.yf'
+      - '**.tf'
 
 
 jobs:
