@@ -1,0 +1,75 @@
+name: test-build-deploy
+
+on:
+  workflow_call:
+    inputs:
+      public_ip:
+        required: true
+        type: string
+    secrets:
+        SSH_PRIVATE_KEY:
+          required: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: corretto
+          java-version: 17
+      - name: Test
+        run: |
+          cd esop
+          ./gradlew test
+
+  build:
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: corretto
+          java-version: 17
+      - name: Build
+        run: |
+          cd esop
+          ./gradlew build -x check
+      - name: Copy jar file to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: esop-trading-1.0
+          path: esop/build/libs/esop-0.1-all.jar
+
+  deploy:
+    needs: [ build ]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Download jar
+        uses: actions/download-artifact@v3
+        with:
+          name: esop-trading-1.0
+      - name: Transfer artifact to EC2 instance
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST_IP: ${{ inputs.public_ip }}
+        run: |
+          echo "$HOST_IP"
+          SSH_HOST=$(echo "$HOST_IP" | tr -d \")
+          echo "$SSH_HOST"
+          eval `ssh-agent`
+          ssh-add - <<< "${SSH_PRIVATE_KEY}"
+          scp -o StrictHostKeyChecking=no "esop/deploy.sh" ec2-user@$SSH_HOST:~
+          scp -o StrictHostKeyChecking=no "esop-0.1-all.jar" ec2-user@$SSH_HOST:~
+          ssh -o StrictHostKeyChecking=no ec2-user@$SSH_HOST -t "nohup sudo yum install java-17-amazon-corretto-headless -y"
+          ssh -o StrictHostKeyChecking=no ec2-user@$SSH_HOST -t "nohup sudo sh deploy.sh"
+  
+
