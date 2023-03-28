@@ -67,6 +67,7 @@ jobs:
           echo "start"
           echo "${{needs.create-infrastructure.outputs.public_ip}}"
           echo "end"
+          echo "$SSH_HOST"
           eval `ssh-agent`
           ssh-add - <<< "${SSH_PRIVATE_KEY}"
           scp -o StrictHostKeyChecking=no "esop/deploy.sh" ec2-user@$SSH_HOST:~
