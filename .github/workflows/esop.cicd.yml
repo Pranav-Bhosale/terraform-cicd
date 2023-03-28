@@ -6,7 +6,11 @@ on:
     paths:
       - 'espo/**'
       - '**.cicd.yml'
-
+  workflow_call:
+    inputs:
+      public_ip:
+        required: true
+        type: string
 
 jobs:
   test:
