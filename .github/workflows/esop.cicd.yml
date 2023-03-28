@@ -4,7 +4,7 @@ on:
   push:
     branch: "main"
     paths:
-      - 'espo/**'
+      - 'esop/**'
       - '**.cicd.yml'
   workflow_call:
     inputs:
@@ -64,7 +64,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST_IP: ${{ inputs.public_ip }}
         run: |
-          SSH_HOST=$(echo HOST_IP | tr -d \")
+          SSH_HOST=$(echo "$HOST_IP" | tr -d \")
           eval `ssh-agent`
           ssh-add - <<< "${SSH_PRIVATE_KEY}"
           scp -o StrictHostKeyChecking=no "esop/deploy.sh" ec2-user@$SSH_HOST:~
