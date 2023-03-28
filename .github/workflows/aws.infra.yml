@@ -36,6 +36,7 @@ jobs:
           terraform apply -auto-approve
 
   create-infrastructure:
+    needs: [terraform-setup-s3-backend]
     runs-on: ubuntu-22.04
     outputs:
       public_ip: ${{steps.create-instance.outputs.ip}}
