@@ -60,3 +60,7 @@ jobs:
         run: |
           cd ./create-instance
           echo ip=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " | tr -d \" |  cut -f1 -d ":"  | tr -d '\n') >> "$GITHUB_OUTPUT"
+  call-workflow-passing-data:
+    uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.cicd.yml@main
+    with:
+      public_ip: ${{needs.create-infrastructure.outputs.public_ip}}
