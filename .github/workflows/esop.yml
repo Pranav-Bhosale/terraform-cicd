@@ -66,7 +66,7 @@ jobs:
           SSH_HOST=$(echo "$HOST_IP" | tr -d \")
           echo "$SSH_HOST"
           eval `ssh-agent`
-          ssh-add <<< "$SSH_PRIVATE_KEY"
+          ssh-add - <<< "${SSH_PRIVATE_KEY}"
           scp -o StrictHostKeyChecking=no "esop/deploy.sh" ec2-user@$SSH_HOST:~
           scp -o StrictHostKeyChecking=no "esop-0.1-all.jar" ec2-user@$SSH_HOST:~
           ssh -o StrictHostKeyChecking=no ec2-user@$SSH_HOST -t "nohup sudo yum install java-17-amazon-corretto-headless -y"
