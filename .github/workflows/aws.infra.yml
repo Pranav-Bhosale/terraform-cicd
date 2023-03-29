@@ -91,8 +91,6 @@ jobs:
 
   esop:
     needs: [create-infrastructure]
-    environment:
-      name: esop-prodx
     uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.yml@main
     with:
       public_ip: ${{needs.create-infrastructure.outputs.public_ip}}
