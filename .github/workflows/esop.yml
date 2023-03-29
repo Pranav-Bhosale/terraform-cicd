@@ -50,6 +50,8 @@ jobs:
   deploy:
     needs: [ build ]
     runs-on: ubuntu-22.04
+    environment:
+      name: esop-prod
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
