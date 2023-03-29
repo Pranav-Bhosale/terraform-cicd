@@ -87,12 +87,3 @@ jobs:
           cd ./create-instance
           IP_ADDRESS=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " |  cut -f1 -d ":"  | tr -d '\n')
           echo ip="$IP_ADDRESS" >> "$GITHUB_OUTPUT"
-          
-
-  esop:
-    needs: [create-infrastructure]
-    uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.yml@main
-    with:
-      public_ip: ${{needs.create-infrastructure.outputs.public_ip}}
-    secrets:
-      SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
