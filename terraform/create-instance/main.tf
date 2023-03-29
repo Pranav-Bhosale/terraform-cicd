@@ -1,24 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "4.16"
-    }
-  }
-  backend "s3" {
-    bucket = "pb-terraformt-bucket"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
-    encrypt = true
-  }
-  required_version = ">= 1.2.0"
-}
-
-
-provider "aws" {
-  region  = "us-east-1"
-}
-
 resource "aws_subnet" "pb-public-subnet" {
   vpc_id = "vpc-019c09a1a0c5b4f6b"
   cidr_block = "10.0.0.32/28"
@@ -66,7 +45,7 @@ resource "aws_security_group" "allow-ssh-port80" {
 
 resource "aws_key_pair" "terraform-trial" {
   key_name = "terraform-trial-key"
-  public_key = file("./ssh-keys/terraform-trial.pub")
+  public_key = file("./create-instance/ssh-keys/terraform-trial.pub")
 }
 
 
