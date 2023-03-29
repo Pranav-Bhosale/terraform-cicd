@@ -22,14 +22,14 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cd ./create-s3-bucket
+          cd ./terraform/create-s3-bucket
           terraform init
       - name: create backend
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cd ./create-s3-bucket
+          cd ./terraform/create-s3-bucket
           terraform apply -auto-approve
 
   infrastructure-plan:
@@ -47,14 +47,14 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cd ./create-instance
+          cd ./terraform/create-instance
           terraform init
       - name: terraform plan
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cd ./create-instance
+          cd ./terraform/create-instance
           terraform plan
 
   create-infrastructure:
@@ -76,7 +76,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cd ./create-instance
+          cd ./terraform/create-instance
           terraform init
       - name: terraform apply
         id: create-instance
@@ -84,6 +84,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cd ./create-instance
+          cd ./terraform/create-instance
           IP_ADDRESS=$(terraform apply -auto-approve | grep instance_public_ip | tr -d "instance_public_ip = " |  cut -f1 -d ":"  | tr -d '\n')
           echo ip="$IP_ADDRESS" >> "$GITHUB_OUTPUT"

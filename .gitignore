@@ -17,7 +17,7 @@ destroy-with-bucket.sh
 destroy.sh
 initialize.sh
 initialize-with-bucket.sh
-create-instance/ssh-keys/terraform-trial
+terraform/create-instance/ssh-keys/terraform-trial
 *.terraform/
 *.hcl
 *.tfstate
