@@ -93,10 +93,8 @@ jobs:
     needs: [create-infrastructure]
     environment:
       name: esop-prodx
-    steps:
-      - name:
-        uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.yml@main
-        with:
-          public_ip: ${{needs.create-infrastructure.outputs.public_ip}}
-        secrets:
-          SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+    uses: Pranav-Bhosale/terraform-cicd/.github/workflows/esop.yml@main
+    with:
+      public_ip: ${{needs.create-infrastructure.outputs.public_ip}}
+    secrets:
+      SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
