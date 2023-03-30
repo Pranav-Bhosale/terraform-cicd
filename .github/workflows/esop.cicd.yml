@@ -9,6 +9,7 @@ on:
       - 'esop/**'
       - '**.cicd.yml'
 
+      
 jobs:
   get-ip:
     runs-on: ubuntu-22.04

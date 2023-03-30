@@ -7,6 +7,7 @@ on:
       - '**.tf'
       - '**.infra.yml'
 
+      
 jobs:
   terraform-setup-s3-backend:
     runs-on: ubuntu-22.04
